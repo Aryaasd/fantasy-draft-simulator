@@ -1,0 +1,27 @@
+{
+  "name": "laces-mock-draft",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "check:draft": "node --experimental-strip-types --no-warnings scripts/check-draft.ts",
+    "check:theme": "node --experimental-strip-types --no-warnings scripts/check-theme.ts",
+    "check": "npm run lint && npx tsc --noEmit && npm run check:theme && npm run check:draft"
+  },
+  "dependencies": {
+    "next": "16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.0",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,3270 @@
+/* Laces design tokens — sampled from lacessports.com
+ *
+ * Light, warm, editorial. Playfair Display for headings, Inter for reading,
+ * Poppins for anything you click. The signature is the button: a pill with a
+ * solid unblurred offset shadow that compresses when pressed.
+ *
+ * Earlier revisions of this file used the laces-quiz prototype palette
+ * (near-black + lime, Bebas Neue). That is NOT the brand — don't reintroduce it.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Theming: three states — light, dark, and system (the default).
+ *
+ * Light lives on bare :root so it's the fallback. Dark is applied both by the
+ * OS preference (unless the user explicitly chose light) and by an explicit
+ * data-theme="dark". That means an explicit choice wins in BOTH directions —
+ * choosing light on a dark-OS machine has to work too.
+ *
+ * The two dark blocks are duplicated on purpose: CSS can't share a declaration
+ * list across a media query boundary. KEEP THEM IN SYNC — scripts/check-theme.ts
+ * asserts they define the same token set and fails the build if they drift.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --bg: #faf7f5;
+  --surface: #ffffff;
+  --surface-alt: #ebe8ee;
+  --surface-sunken: #f4f1f4;
+  /* Translucent: the nav blurs whatever scrolls beneath it. */
+  --nav-bg: rgba(250, 247, 245, 0.82);
+
+  --border: #ebe4e0;
+  --border-strong: #ddd5d0;
+
+  --text: #2e2e2e;
+  --muted: #6b645f;
+  --muted-dim: #736c66;
+
+  --purple: #775591;
+  --purple-hover: #664a7d;
+  --purple-soft: rgba(119, 85, 145, 0.1);
+  --purple-softer: rgba(119, 85, 145, 0.05);
+  --purple-shadow: rgba(119, 85, 145, 0.4);
+  /* Text sitting on a purple fill. Flips with the theme because the dark
+     accent is light enough that white on it is unreadable. */
+  --on-purple: #ffffff;
+
+  --danger: #b3453a;
+  --danger-bg: #fbeeec;
+  --danger-border: #edd2ce;
+
+  --warn: #8a6420;
+  --warn-bg: #fbf3e4;
+  --warn-border: #ecdcbd;
+  /* Position colours.
+     Fantasy sites all colour-code positions and people read them at a glance,
+     so the position is doing work no label can. Every value below is measured
+     against --bg, --surface AND --surface-sunken in BOTH themes at 4.5:1 or
+     better — see the PAIRS table in scripts/check-theme.ts. Saturated brand-y
+     versions of these fail on white, which is why they are deepened here and
+     lightened for dark rather than shared. */
+  --pos-qb: #1F6F8B;
+  --pos-rb: #1B7A5A;
+  --pos-wr: #A15200;
+  --pos-te: #9C3268;
+  --pos-k: #5B54A8;
+  --pos-def: #77590A;
+
+  --radius-sm: 12px;
+  --radius: 16px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+}
+
+/* Dark — warm near-black with a violet cast, not neutral grey. The light theme's
+   warmth is the brand's; a cold grey dark mode reads as a different product. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --bg: #17141a;
+    --surface: #201c24;
+    --surface-alt: #2a2431;
+    --surface-sunken: #1c1920;
+    --nav-bg: rgba(23, 20, 26, 0.82);
+
+    --border: #302a36;
+    --border-strong: #423a4a;
+
+    --text: #ede9ef;
+    --muted: #a79fad;
+    --muted-dim: #938a9b;
+
+    --purple: #b79acf;
+    --purple-hover: #c9b0dc;
+    --purple-soft: rgba(183, 154, 207, 0.16);
+    --purple-softer: rgba(183, 154, 207, 0.08);
+    --purple-shadow: rgba(183, 154, 207, 0.28);
+    --on-purple: #1a1520;
+
+    --danger: #e8897c;
+    --danger-bg: #2e1c1a;
+    --danger-border: #4a2c28;
+
+    --warn: #e0b968;
+    --warn-bg: #2a2114;
+    --warn-border: #46381f;
+    /* Position colours, lightened for dark. See the light block for the rule. */
+    --pos-qb: #6FC6E8;
+    --pos-rb: #4FD1A0;
+    --pos-wr: #F2A25C;
+    --pos-te: #F08CBC;
+    --pos-k: #A9A2F2;
+    --pos-def: #DCC067;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #17141a;
+  --surface: #201c24;
+  --surface-alt: #2a2431;
+  --surface-sunken: #1c1920;
+  --nav-bg: rgba(23, 20, 26, 0.82);
+
+  --border: #302a36;
+  --border-strong: #423a4a;
+
+  --text: #ede9ef;
+  --muted: #a79fad;
+  --muted-dim: #938a9b;
+
+  --purple: #b79acf;
+  --purple-hover: #c9b0dc;
+  --purple-soft: rgba(183, 154, 207, 0.16);
+  --purple-softer: rgba(183, 154, 207, 0.08);
+  --purple-shadow: rgba(183, 154, 207, 0.28);
+  --on-purple: #1a1520;
+
+  --danger: #e8897c;
+  --danger-bg: #2e1c1a;
+  --danger-border: #4a2c28;
+
+  --warn: #e0b968;
+  --warn-bg: #2a2114;
+  --warn-border: #46381f;
+  /* Position colours, lightened for dark. See the light block for the rule. */
+  --pos-qb: #6FC6E8;
+  --pos-rb: #4FD1A0;
+  --pos-wr: #F2A25C;
+  --pos-te: #F08CBC;
+  --pos-k: #A9A2F2;
+  --pos-def: #DCC067;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--purple);
+  text-decoration: none;
+}
+
+/*
+ * Underline on hover is for links inside running prose, and nothing else.
+ *
+ * This used to be a bare `a:hover`, which meant every component built on a link
+ * — the hub cards, the nav items, the wordmark — sprouted an underline across
+ * its entire contents on hover. Each one then had to opt back out by hand, and
+ * the hub cards opted out at rest but not on hover, so a whole card underlined
+ * itself when you pointed at it.
+ *
+ * Opt in rather than opt out: a link in a paragraph is prose and should
+ * underline; a link styled as a card, a tab, or a button is a control and
+ * should not.
+ */
+p a:hover,
+li a:hover,
+.disclosure a:hover {
+  text-decoration: underline;
+}
+
+/* Selection picks up the brand rather than the browser's default blue. */
+::selection {
+  background: var(--purple);
+  color: var(--on-purple);
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/*
+ * The mascot from the iOS app, keyed off its black plate — see
+ * scripts/make-logo.ts. Sized to the cap height of the wordmark beside it and
+ * nudged up, because its feet sit slightly above the artwork's own baseline.
+ */
+.wordmark-logo {
+  width: auto;
+  height: 1.72em;
+  margin-top: -0.16em;
+}
+
+/* Layout */
+
+.shell {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.topbar .wordmark {
+  font-size: 1.6rem;
+}
+
+.wordmark-link {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.wordmark-link:hover {
+  color: var(--purple);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.theme-toggle:hover {
+  color: var(--purple);
+  border-color: var(--purple);
+  background: var(--purple-softer);
+}
+
+.league-name {
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* Typography */
+
+.section-label {
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 0.85rem;
+}
+
+.title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 2.4rem;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin-bottom: 0.75rem;
+}
+
+.title em {
+  font-style: normal;
+  color: var(--purple);
+}
+
+.subtitle {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.62;
+  margin-bottom: 2rem;
+}
+
+/* Controls */
+
+.btn {
+  background: var(--purple);
+  color: var(--on-purple);
+  border: none;
+  padding: 0.8rem 1.9rem;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  /* Solid offset, no blur — the site's signature button. */
+  box-shadow: 0 4px 0 0 var(--purple-shadow);
+  transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--purple-hover);
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 var(--purple-shadow);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 0 var(--purple-shadow);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: 0 4px 0 0 rgba(119, 85, 145, 0.15);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border-strong);
+  padding: 0.55rem 1.15rem;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.85rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: var(--purple);
+  border-color: var(--purple);
+  background: var(--purple-softer);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  font-family: inherit;
+  font-size: 0.98rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px var(--purple-soft);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--muted-dim);
+}
+
+.field {
+  margin-bottom: 1.15rem;
+}
+
+.field label {
+  display: block;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Cards */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.chip {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.9rem;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.chip:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.chip.active {
+  background: var(--purple-soft);
+  border-color: var(--purple);
+  color: var(--purple);
+  font-weight: 500;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--purple-soft);
+  color: var(--purple);
+  border-radius: var(--radius-pill);
+  padding: 0.28rem 0.85rem;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Chat */
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  animation: fadeUp 0.3s ease both;
+}
+
+.msg.user {
+  align-items: flex-end;
+}
+
+.msg-who {
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--purple);
+}
+
+.msg.user .msg-who {
+  color: var(--muted-dim);
+}
+
+.bubble {
+  max-width: 90%;
+  padding: 0.9rem 1.15rem;
+  border-radius: var(--radius);
+  font-size: 0.96rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.msg.lacey .bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  /* Tucked corner, mirroring the site's asymmetric card radii. */
+  border-radius: var(--radius) var(--radius) var(--radius) 4px;
+}
+
+.msg.user .bubble {
+  background: var(--purple);
+  color: var(--on-purple);
+  border-radius: var(--radius) var(--radius) 4px var(--radius);
+}
+
+.composer {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-end;
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to top, var(--bg) 72%, transparent);
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.composer .textarea {
+  resize: none;
+  max-height: 160px;
+}
+
+.grounding {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.7rem;
+  color: var(--muted-dim);
+}
+
+.grounding.ungrounded {
+  color: var(--danger);
+}
+
+/* Feedback */
+
+.feedback {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
+}
+
+.feedback button {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--muted-dim);
+  border-radius: var(--radius-pill);
+  padding: 0.2rem 0.65rem;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.feedback button:hover {
+  color: var(--purple);
+  border-color: var(--purple);
+}
+
+.feedback button.on {
+  border-color: var(--purple);
+  color: var(--purple);
+  background: var(--purple-softer);
+}
+
+.feedback button.on.down {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+/* Misc */
+
+.dots {
+  display: flex;
+  gap: 5px;
+  padding: 0.9rem 1.15rem;
+}
+
+.dots span {
+  width: 7px;
+  height: 7px;
+  background: var(--purple);
+  border-radius: 50%;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.disclosure {
+  font-size: 0.76rem;
+  color: var(--muted-dim);
+  line-height: 1.55;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  margin-top: 1.75rem;
+}
+
+.error {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.empty {
+  color: var(--muted-dim);
+  font-size: 0.92rem;
+  text-align: center;
+  padding: 2.5rem 0;
+}
+
+/* Landing pages */
+
+.ask-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+  margin-bottom: 2.5rem;
+}
+
+.ask-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+
+/* A purple edge that wipes in on hover — these are example questions, and the
+   row should feel like something you could have asked. */
+.ask-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--purple);
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+
+.ask-row:hover {
+  background: var(--purple-softer);
+}
+
+.ask-row:hover::before {
+  transform: scaleY(1);
+}
+
+.ask-row:last-child {
+  border-bottom: none;
+}
+
+.ask-q {
+  font-size: 0.98rem;
+}
+
+.ask-tag {
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--purple);
+  white-space: nowrap;
+}
+
+.pitch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.75rem;
+  margin-bottom: 2.5rem;
+}
+
+/* A short stitched tick above each heading, so the three read as a set. */
+.pitch-title {
+  position: relative;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 1.12rem;
+  margin-bottom: 0.4rem;
+  padding-top: 0.9rem;
+}
+
+.pitch-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.75rem;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--purple) 0 5px,
+    transparent 5px 9px
+  );
+}
+
+.pitch-body {
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.pilot-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: var(--surface-alt);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.25rem;
+}
+
+.pilot-note p {
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* League welcome */
+
+.welcome-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.welcome-example {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) var(--radius) 4px;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+  max-width: 90%;
+}
+
+.welcome-example:nth-child(even) {
+  align-self: flex-end;
+  border-radius: var(--radius) var(--radius) 4px var(--radius);
+}
+
+.welcome-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 2rem;
+}
+
+.welcome-point {
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: var(--muted);
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--purple-soft);
+}
+
+.welcome-point strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.league-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.league-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text);
+  font-weight: 500;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.league-link:hover {
+  border-color: var(--purple);
+  background: var(--purple-softer);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+/* Admin tables */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.table th {
+  text-align: left;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted-dim);
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  vertical-align: top;
+}
+
+.table td.num {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar {
+  height: 6px;
+  background: var(--purple);
+  border-radius: 3px;
+  min-width: 2px;
+  opacity: 0.85;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1rem;
+}
+
+.stat-value {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.7rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.stat.alert {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+
+.stat.alert .stat-value {
+  color: var(--danger);
+}
+
+/* Draft co-pilot */
+
+.draft {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.draft-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.on-clock,
+.until {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.9rem;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.on-clock {
+  color: var(--purple);
+}
+
+.draft-pos {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.draft-pos label {
+  font-family: var(--font-ui), sans-serif;
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.mock-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.run-warn {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1rem;
+  font-size: 0.87rem;
+}
+
+.rec {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.3rem;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.rec.live {
+  border-color: var(--purple);
+  background: var(--purple-softer);
+  box-shadow: 0 4px 0 0 var(--purple-soft);
+}
+
+.rec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.rec-body {
+  font-size: 0.96rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rec-idle {
+  font-size: 0.87rem;
+  color: var(--muted-dim);
+  line-height: 1.55;
+}
+
+.logger .search-wrap {
+  position: relative;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.autocomplete {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  z-index: 20;
+  box-shadow: 0 8px 24px rgba(46, 46, 46, 0.09);
+}
+
+.ac-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.92rem;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+}
+
+.ac-item.on {
+  background: var(--purple-soft);
+  color: var(--purple);
+}
+
+.ac-meta {
+  color: var(--muted-dim);
+  font-size: 0.78rem;
+}
+
+.ac-inj {
+  color: var(--danger);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.draft-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.needs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.6rem 0 0.85rem;
+}
+
+.roster {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* --- starting lineup ----------------------------------------------------- */
+
+/* A roster read as a lineup rather than a draft log. The empty rows carry the
+   feature: a hole you can see is a hole you fill. */
+
+.lineup-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0.6rem 0 0;
+}
+
+.lineup-row {
+  display: grid;
+  /* Fixed first column so the slot labels form a clean edge and the names all
+     start at the same x — the thing that makes this scan as a lineup. */
+  grid-template-columns: 3.1rem auto 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.28rem 0.4rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+}
+
+.lineup-row:nth-child(odd) {
+  background: var(--surface-sunken);
+}
+
+.lineup-slot {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lineup-slot-bench {
+  color: var(--muted-dim);
+  font-weight: 600;
+}
+
+.lineup-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.lineup-meta {
+  font-size: 0.74rem;
+  color: var(--muted-dim);
+  white-space: nowrap;
+}
+
+/* Holds the avatar column so an empty slot still lines up with a filled one. */
+.face-gap {
+  width: 26px;
+  height: 26px;
+}
+
+/* Dashed, not red. An empty slot in round one is the normal state of a draft,
+   not a problem — it becomes one only at the end, and the completion warning
+   already says so. This just makes the shape of the team legible throughout. */
+.lineup-empty {
+  border: 1px dashed var(--muted-dim);
+  background: none;
+}
+
+.lineup-empty .lineup-name,
+.lineup-empty .lineup-meta {
+  color: var(--muted-dim);
+  font-style: italic;
+}
+
+.lineup-bench {
+  margin-top: 0.9rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--border);
+}
+
+.lineup-hint {
+  margin-top: 0.6rem;
+}
+
+.draft-ask {
+  border-top: 1px solid var(--border);
+  padding-top: 1.15rem;
+}
+
+/* --- research readout ---------------------------------------------------- */
+
+.readout-section {
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.readout-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+/* The research question number, so the three sections read as one argument. */
+.readout-q {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: var(--purple-soft);
+  color: var(--purple);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.readout-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.45rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.readout-asks {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin-top: 0.2rem;
+}
+
+.readout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/*
+ * Shown in place of an empty table.
+ *
+ * For most of the pre-season every table here is empty, and "no data yet" says
+ * nothing about whether the pipeline works or what will eventually appear.
+ */
+.readout-waiting {
+  color: var(--muted-dim);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  padding: 0.85rem 1rem;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-sm);
+}
+
+.readout-good {
+  color: var(--purple);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.85rem 1rem;
+  background: var(--purple-soft);
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 820px) {
+  .readout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- ask dock ------------------------------------------------------------ */
+
+/*
+ * Lacey follows you around the site.
+ *
+ * The ask box used to be buried inside the draft board, which meant the single
+ * thing this pilot exists to capture was reachable from exactly one page.
+ */
+.dock-fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem 0.55rem 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  color: var(--text);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 var(--purple-shadow);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.15s ease;
+}
+
+.dock-fab:hover {
+  border-color: var(--purple);
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 var(--purple-shadow);
+}
+
+.dock-fab img {
+  width: auto;
+  height: 1.6rem;
+}
+
+/* Collapses to a circle once open, so it reads as the panel's close control. */
+.dock-fab.open {
+  padding: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  justify-content: center;
+}
+
+.dock-fab-count {
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--purple);
+  color: var(--on-purple);
+  font-size: 0.7rem;
+}
+
+.dock {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 5.25rem;
+  z-index: 59;
+  display: flex;
+  flex-direction: column;
+  width: min(24rem, calc(100vw - 2.5rem));
+  /* Tall enough to hold a real exchange, short enough to never cover the page. */
+  max-height: min(34rem, calc(100vh - 8rem));
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 14px 42px rgba(20, 12, 28, 0.22);
+  overflow: hidden;
+  animation: fadeUp 0.18s ease both;
+}
+
+/* An author `display` always beats the UA stylesheet's `[hidden]{display:none}`,
+   regardless of source order — so `.dock` alone made the panel visible on every
+   page load no matter what the component's `hidden` attribute said. This rule
+   has to out-specificity `.dock` itself to win the cascade back. */
+.dock[hidden] {
+  display: none;
+}
+
+.dock-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.dock-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.dock-clear {
+  margin-top: 0;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+.dock-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.9rem 1rem;
+}
+
+.dock-empty .concept-body {
+  margin-bottom: 0.85rem;
+}
+
+.dock-starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.dock-starters .chip {
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.dock-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.dock-composer .textarea {
+  flex: 1;
+  min-height: 2.4rem;
+  font-size: 0.9rem;
+}
+
+.dock-composer .btn {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
+  box-shadow: 0 3px 0 0 var(--purple-shadow);
+}
+
+/* On a phone the panel is the screen — a floating card would be unusable. */
+@media (max-width: 560px) {
+  .dock {
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 78vh;
+    border-radius: var(--radius) var(--radius) 0 0;
+    border-bottom: none;
+  }
+  .dock-fab {
+    right: 1rem;
+    bottom: 1rem;
+  }
+  .dock-fab-text {
+    display: none;
+  }
+  .dock-fab {
+    padding: 0.5rem;
+  }
+}
+
+.chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* --- league nav ---------------------------------------------------------- */
+
+/*
+ * Full-bleed bar, sticky, sitting above the page rather than scrolling with it.
+ * The surfaces are peers, so they live here instead of stacked down the page.
+ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border);
+  /* Content must never show through the bar as it scrolls under. */
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  height: 3.25rem;
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  color: var(--text);
+  flex-shrink: 0;
+  /* Rendered as a <button> on surfaces that switch in place rather than
+     navigate, and a button brings a grey UA background with it. */
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-brand:hover {
+  color: var(--purple);
+}
+
+.nav-logo {
+  width: auto;
+  height: 1.55rem;
+}
+
+.nav-wordmark {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.nav-links {
+  display: flex;
+  /* Full-height items so the active rule can sit on the bar's bottom border. */
+  align-items: stretch;
+  align-self: stretch;
+  gap: 1.6rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-links li {
+  display: flex;
+}
+
+/*
+ * Plain text, not chips.
+ *
+ * A filled pill per item turned the bar into a row of buttons competing with
+ * each other and with the page's actual controls, which are also pills. A nav
+ * is a set of labels; the only thing it needs to say is which one you're on.
+ */
+.nav-link {
+  position: relative;
+  /* Fills the bar's height, so the whole strip is the tap target and the active
+     rule lands on the border rather than floating above it. */
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--muted);
+  text-decoration: none;
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 0.83rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--text);
+}
+
+.nav-link.active {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* A rule flush with the bar's own bottom border — the current section reads as
+   attached to the page below it. */
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--purple);
+}
+
+/* Your name, top-right — the conventional place to find your own settings. */
+.nav-you {
+  color: var(--muted);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: color 0.15s ease;
+  /* Same reason as .nav-brand — it's a button in the preview shell. */
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.nav-you:hover {
+  color: var(--text);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Pages under the nav don't need their own top padding. */
+.nav + .shell {
+  padding-top: 2.25rem;
+}
+
+@media (max-width: 760px) {
+  .nav-inner {
+    gap: 0.75rem;
+  }
+  /* Let the sections scroll instead of wrapping the bar to two lines. */
+  .nav-links {
+    overflow-x: auto;
+    scrollbar-width: none;
+    /* A joined member sees up to 4 items, which can run past a phone's width.
+       With nothing marking that, the trailing item just gets clipped mid-word
+       at the box edge — indistinguishable from a rendering bug. Fading the
+       last inch out instead reads as "more here", the same convention iOS
+       uses for horizontally-scrolling strips. Harmless when nothing overflows:
+       the fade lands past the last item, over empty space. */
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 1.5rem), transparent);
+    mask-image: linear-gradient(to right, black calc(100% - 1.5rem), transparent);
+  }
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-wordmark {
+    display: none;
+  }
+}
+
+/* --- league hub ---------------------------------------------------------- */
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 2.25rem 0 0;
+}
+
+.hub-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 1.35rem 1.4rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.hub-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--purple);
+  /* Same solid, unblurred offset as the buttons — the signature detail. */
+  box-shadow: 0 4px 0 0 var(--purple-shadow);
+}
+
+/* The one thing worth doing before draft day, so it reads first. */
+.hub-card.featured {
+  background: var(--purple-soft);
+  border-color: var(--purple);
+}
+
+.hub-card-label {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.4rem;
+}
+
+.hub-card-line {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  /* Leaves room for the arrow so two- and three-line cards align. */
+  padding-right: 1.5rem;
+}
+
+.hub-card-go {
+  position: absolute;
+  right: 1.3rem;
+  bottom: 1.25rem;
+  color: var(--purple);
+  font-size: 1.05rem;
+  transition: transform 0.15s ease;
+}
+
+.hub-card:hover .hub-card-go {
+  transform: translateX(3px);
+}
+
+.welcome-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+/* --- the basics guide ---------------------------------------------------- */
+
+.phase-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 2rem 0 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.phase-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  color: var(--muted);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.phase-tab:hover {
+  color: var(--text);
+}
+
+.phase-tab.active {
+  color: var(--purple);
+  border-bottom-color: var(--purple);
+}
+
+/* Numbered because the three phases are a sequence, not a menu. */
+.phase-tab-num {
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.phase-tab.active .phase-tab-num {
+  background: var(--purple);
+  color: var(--on-purple);
+}
+
+.phase-intro {
+  margin: 2rem 0 0.5rem;
+}
+
+.phase-headline {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+
+.concepts {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+  margin-top: 2rem;
+}
+
+.concept {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+}
+
+.concept-term {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 0.5rem;
+}
+
+/* The one line to read if you read nothing else. */
+.concept-gist {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.28rem;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.85rem;
+}
+
+.concept-body {
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 0.7rem;
+}
+
+.concept-deep {
+  background: var(--purple-soft);
+  border-left: 3px solid var(--purple);
+  border-radius: 0 8px 8px 0;
+  padding: 0.75rem 0.9rem;
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.concept-deep-tag {
+  display: block;
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 0.3rem;
+}
+
+/* Reads as the question itself so tapping it feels like asking, not like a UI. */
+.concept-ask {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-top: 1rem;
+  padding: 0.7rem 0.95rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.concept-ask:hover:not(:disabled) {
+  border-color: var(--purple);
+  color: var(--text);
+}
+
+.concept-ask:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.concept-answer {
+  margin-top: 0.85rem;
+  padding-left: 0.95rem;
+  border-left: 2px solid var(--purple);
+}
+
+/* Outbound reading. Each carries a reason, so it's a list of recommendations
+   rather than a pile of links. */
+.resources {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-sm);
+}
+
+.resources li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.88rem;
+}
+
+.resources a {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.resource-out {
+  margin-left: 0.25rem;
+  font-size: 0.72rem;
+  opacity: 0.7;
+}
+
+.resource-note {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.further {
+  margin-top: 3.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.further .subtitle {
+  margin-bottom: 0.5rem;
+}
+
+/* --- mock draft ---------------------------------------------------------- */
+
+.mock-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.mock-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Board on the left, your team on the right — the board is what you scan. */
+.mock-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.mock-avail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.mock-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.mock-filters .chip {
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+}
+
+.mock-hint {
+  margin: 0.5rem 0 0.75rem;
+  line-height: 1.45;
+}
+
+.mock-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  /* The list rebuilds every pick; a scroll box keeps the page from jumping. */
+  max-height: 30rem;
+  overflow-y: auto;
+}
+
+.mock-row {
+  display: grid;
+  grid-template-columns: 1fr auto 3rem 4.5rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.15rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.mock-row:last-child {
+  border-bottom: none;
+}
+
+/* Sticks so the odds column stays labelled while you scroll the board. */
+.mock-row-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg);
+  color: var(--muted-dim);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.mock-row-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.mock-row-who {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mock-row-odds {
+  text-align: right;
+}
+
+.mock-row-act {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.odds {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+/* Read as "can I wait?" — green keeps, red is gone before you pick again. */
+.odds-safe {
+  color: var(--purple);
+}
+
+.odds-mid {
+  color: var(--warn);
+}
+
+.odds-gone {
+  color: var(--danger);
+}
+
+/* ===========================================================================
+ * Flair
+ *
+ * Kept to things the brand already owns — the lace stitching from the mark, the
+ * purple, and the offset shadow — rather than decoration invented for its own
+ * sake. Everything here is skipped under prefers-reduced-motion, and nothing
+ * carries meaning on its own, so losing it costs nothing.
+ * ========================================================================= */
+
+/*
+ * A stitched rule, taken from the laces on the mark.
+ *
+ * Two dashes offset against each other read as stitching rather than as a
+ * dashed border; a plain <hr> between sections was doing the same job with none
+ * of the identity.
+ */
+.stitch {
+  position: relative;
+  height: 1px;
+  border: none;
+  background: var(--border);
+  margin: 3rem 0;
+  overflow: visible;
+}
+
+.stitch::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4.5rem;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--purple) 0 7px,
+      transparent 7px 14px
+    );
+  opacity: 0.55;
+}
+
+/* Ambient warmth behind a hero. Sits under the content and fades out well
+   before any text, so it never eats contrast. */
+.glow {
+  position: relative;
+}
+
+.glow::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -14rem;
+  left: 50%;
+  /* 120% used to bleed ~10% past each edge. On a wide screen the shell is far
+     narrower than the viewport so it went unnoticed; at phone width the shell
+     IS the viewport, so the glow pushed the document sideways and every page
+     carrying it scrolled horizontally. The gradient is transparent by 70%
+     anyway, so clamping to the container costs nothing visible. Fixing the
+     width rather than clipping the overflow keeps the sticky nav intact —
+     `overflow` on an ancestor would break it. */
+  width: min(46rem, 100%);
+  height: 32rem;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    var(--purple-soft) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Staggered entrance for a grid of cards. Index set inline per card. */
+.rise {
+  animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* The mark, oversized and faint, as a page ornament. Decorative only —
+   aria-hidden at the call site. */
+.watermark {
+  position: absolute;
+  /* Sits fully inside the block. Bled off the top edge it looked clipped —
+     like a mistake rather than an ornament. */
+  right: -0.5rem;
+  top: 0.25rem;
+  width: 7.5rem;
+  opacity: 0.055;
+  transform: rotate(-7deg);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* No room beside the headline once it wraps. */
+@media (max-width: 820px) {
+  .watermark {
+    display: none;
+  }
+}
+
+/* Underline that draws itself on hover, for prose links. */
+.link-swipe {
+  position: relative;
+  text-decoration: none;
+}
+
+.link-swipe::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.25s ease;
+}
+
+.link-swipe:hover {
+  text-decoration: none;
+}
+
+.link-swipe:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 1.95rem;
+  }
+  .draft-cols {
+    grid-template-columns: 1fr;
+  }
+  .draft-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .mock-grid,
+  .mock-fields,
+  .hub-grid {
+    grid-template-columns: 1fr;
+  }
+  /* Drop the ADP column before the odds — odds are the actionable one. */
+  .mock-row {
+    grid-template-columns: 1fr 3rem 4.5rem;
+  }
+  .mock-row-adp {
+    display: none;
+  }
+  /* Three tabs won't fit; let them scroll rather than wrap into a block. */
+  .phase-tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .phase-tab {
+    white-space: nowrap;
+    padding: 0.7rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .field-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .bubble {
+    max-width: 100%;
+  }
+}
+
+/* --- the room ------------------------------------------------------------ */
+
+.room {
+  margin-top: 2rem;
+}
+
+/* Your own shape, pinned above the ranking — every row below is read as a
+   comparison against it, so it has to be on screen while you read them. */
+.room-me {
+  background: var(--purple-soft);
+  border-radius: var(--radius);
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.room-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+}
+
+/* A hole is the absence of something — outlined rather than filled, so it
+   reads as a gap in the row instead of another thing they own. */
+.chip.room-hole {
+  background: none;
+  border-style: dashed;
+  color: var(--muted-dim);
+}
+
+.room-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.room-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.85rem 0.2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.room-row:last-child {
+  border-bottom: none;
+}
+
+/* Teams with nothing to offer stay in the list — the room is the whole room —
+   but they shouldn't compete with the ones worth acting on. */
+.room-quiet {
+  opacity: 0.6;
+}
+
+.room-rank {
+  flex-shrink: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-strong);
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.room-rank.top {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: var(--on-purple);
+}
+
+.room-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.room-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.room-why {
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* No score, no number — see the note in TheRoom.tsx. */
+.room-rank-none {
+  border-style: dashed;
+  color: var(--muted-dim);
+}
+
+/* --- injury / availability flags ----------------------------------------- */
+
+/*
+ * Tiered on purpose. Every status used to share one danger red, so a player who
+ * will not take a snap all season and one managing a tight hamstring in camp
+ * read exactly alike — and with 41 of the top 200 carrying something, a board
+ * of uniform red is a board you learn to ignore.
+ */
+.inj {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.08rem 0.4rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: help;
+}
+
+/* Will not play — the only tier that should stop you drafting him outright. */
+.inj-out {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+.inj-doubtful {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+  opacity: 0.85;
+}
+
+/* Being managed. Amber, not red — this is "ask about him", not "avoid him". */
+.inj-questionable,
+.inj-unknown {
+  background: var(--warn-bg);
+  color: var(--warn);
+  border: 1px solid var(--warn-border);
+}
+
+/* Marks a suspension or holdout: unavailable, but perfectly healthy. */
+.inj-dot {
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+/* Roster-level health summary, sitting under your own team. */
+.health-note {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.health-note .btn-ghost {
+  margin-top: 0.45rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+}
+
+/* Visually hidden, still read aloud — the meaning is in the tooltip, and a
+   tooltip is unreachable by keyboard and invisible to a screen reader. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+ * Wide tables scroll themselves, not the page.
+ *
+ * The readout's failure table carries eight columns, which cannot fit a phone.
+ * Left alone it pushed the document to ~650px against a 375px viewport, so the
+ * whole page slid sideways and every other surface inherited a horizontal
+ * scrollbar. Making the table its own scroll container confines that to the one
+ * element that genuinely needs the room.
+ *
+ * `display: block` is what turns a table into a scrollable box — overflow has
+ * no effect on `display: table`, which sizes to its content regardless.
+ */
+@media (max-width: 760px) {
+  .table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    /* Momentum scrolling, and a hint that there is more to the right. */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ===========================================================================
+ * Entry experience — landing, league front door, hub
+ *
+ * The organising idea is LACING. The brand is called Laces, its divider is a
+ * row of stitches, and the one genuinely good layout already in the app is the
+ * league door's alternating question bubbles. That stagger is the brand's own
+ * metaphor — two sides pulled together across a seam — and it is also the
+ * literal shape of a conversation. Two true meanings, so it earns its place as
+ * structure rather than ornament.
+ *
+ * Used in exactly one place per page. Alternating everything would turn a
+ * signature into a tic.
+ * ======================================================================== */
+
+.lace {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.25rem 0;
+}
+
+/* The seam the items lace across. Dashed rather than solid so it reads as
+   stitching rather than a rule. */
+.lace::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--border-strong) 0 5px,
+    transparent 5px 11px
+  );
+}
+
+.lace-item {
+  position: relative;
+  /* Fixed rather than max-width, and this is load-bearing. The connector is a
+     fixed 1.15rem, so a bubble that shrinks to its text leaves the tick
+     floating short of the seam — the lace stops touching, which reads as a
+     rendering bug rather than a stitch. Sizing every item to exactly half the
+     column minus the connector makes the two meet precisely, every time.
+     Uniform widths are also on-metaphor: eyelets are evenly spaced. */
+  width: calc(50% - 1.15rem);
+  padding: 0.7rem 1.05rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* The crossing. Without this the items are merely staggered; the short tick
+   into the seam is what makes the row read as laced. */
+.lace-item::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 1.15rem;
+  height: 1px;
+  background: var(--border-strong);
+}
+
+.lace-item:nth-child(odd) {
+  align-self: flex-start;
+  /* The clipped corner points back at the speaker, the way a chat tail does. */
+  border-radius: var(--radius) var(--radius) var(--radius) 4px;
+}
+.lace-item:nth-child(odd)::after {
+  right: -1.15rem;
+}
+
+.lace-item:nth-child(even) {
+  align-self: flex-end;
+  border-radius: var(--radius) var(--radius) 4px var(--radius);
+}
+.lace-item:nth-child(even)::after {
+  left: -1.15rem;
+}
+
+/* Below this the two columns collapse into one, so a seam down the middle
+   would cut through the text instead of between it. */
+@media (max-width: 620px) {
+  .lace::before {
+    display: none;
+  }
+  .lace-item,
+  .lace-item:nth-child(even),
+  .lace-item:nth-child(odd) {
+    width: 100%;
+    align-self: stretch;
+  }
+  .lace-item::after {
+    display: none;
+  }
+}
+
+/* --- rhythm ---------------------------------------------------------------
+ * Every section used to sit the same distance from the last, which is what
+ * made the page read as a stack of blocks rather than a composition. Space is
+ * the loudest signal of importance available, so it gets spent unevenly.
+ * ------------------------------------------------------------------------ */
+
+.band-loud {
+  margin-top: 5.5rem;
+}
+.band {
+  margin-top: 3.75rem;
+}
+.band-quiet {
+  margin-top: 2.25rem;
+}
+
+@media (max-width: 640px) {
+  .band-loud {
+    margin-top: 3.5rem;
+  }
+  .band {
+    margin-top: 2.5rem;
+  }
+}
+
+/* --- hero -----------------------------------------------------------------
+ * The old h1 sat at 2.4rem against 1.05rem body — close enough that the page
+ * read as a document. The jump is what makes a heading feel deliberate.
+ * ------------------------------------------------------------------------ */
+
+.title-lede {
+  font-size: clamp(2.5rem, 5.4vw, 3.7rem);
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+}
+
+/* The emphasised phrase is the headline's whole argument, so it breaks as a
+   unit. Left alone, "Sports should be fun. Not homework." stranded "Not" at
+   the end of the first line, which reads as a typesetting accident. */
+.title-lede em {
+  display: inline-block;
+}
+
+/* Measure, not width. Long lines are the other half of feeling like a document. */
+.lede {
+  max-width: 34rem;
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  margin-top: 2rem;
+}
+
+/* One concrete fact, sitting under the action. A pilot cannot show logos it
+   does not have, and inventing them would be worse than saying what is true. */
+.hero-proof {
+  margin-top: 1.4rem;
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted-dim);
+}
+
+.hero-proof strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* --- tenets ---------------------------------------------------------------
+ * Replaces the three equal columns. Three equal cards with a mark above each
+ * is the single most recognisable AI-site layout, and these three points are
+ * not a sequence, so numbering them would assert an order that isn't there.
+ * An editorial list at a narrower measure reads as writing instead.
+ * ------------------------------------------------------------------------ */
+
+.tenets {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 40rem;
+}
+
+.tenet {
+  display: grid;
+  grid-template-columns: 1.75rem 1fr;
+  align-items: start;
+}
+
+/* A single stitch, echoing the seam. Same mark as the lacing, so the page has
+   one vocabulary rather than two. */
+.tenet::before {
+  content: '';
+  grid-column: 1;
+  width: 11px;
+  height: 1px;
+  margin-top: 0.72rem;
+  background: var(--purple);
+  opacity: 0.55;
+}
+
+.tenet-body {
+  grid-column: 2;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.tenet-body strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* --- hub ------------------------------------------------------------------
+ * Was four equal cards in a 2x2. Equal weight means the page has no opinion
+ * about what to do, which is the one thing a hub exists to have. One lead
+ * card carries the thing that matters today; the rest go quiet.
+ * ------------------------------------------------------------------------ */
+
+.hub-lead {
+  display: block;
+  position: relative;
+  margin-top: 2.25rem;
+  padding: 1.6rem 1.75rem 1.75rem;
+  background: var(--surface);
+  border: 1px solid var(--purple);
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 4px 0 var(--purple-shadow);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+/* Same compress-on-press as the primary button — the hub's main action should
+   feel like the same object as every other primary action in the app. */
+.hub-lead:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--purple-shadow);
+}
+
+.hub-lead-eyebrow {
+  display: block;
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 0.5rem;
+}
+
+.hub-lead-title {
+  display: block;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.75rem;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin-bottom: 0.45rem;
+}
+
+.hub-lead-line {
+  display: block;
+  max-width: 32rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* The quiet three. Rows, not cards — a bordered row carries less weight than
+   a raised rectangle, which is the point. */
+.hub-rest {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.hub-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.05rem 0.25rem;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: padding-left 0.16s ease, color 0.16s ease;
+}
+
+/* Shifts toward the reader on hover instead of lifting. A row that lifts
+   pretends to be a card. */
+.hub-row:hover {
+  padding-left: 0.6rem;
+  color: var(--purple);
+}
+
+.hub-row-label {
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  min-width: 8.5rem;
+}
+
+.hub-row-line {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.hub-row-go {
+  margin-left: auto;
+  color: var(--muted-dim);
+  flex-shrink: 0;
+}
+
+@media (max-width: 560px) {
+  .hub-row {
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+  }
+  .hub-row-label {
+    min-width: 0;
+  }
+  .hub-row-go {
+    display: none;
+  }
+}
+
+/* --- draft report -------------------------------------------------------- */
+
+.report {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.report-grade {
+  display: flex;
+  gap: 1.1rem;
+  align-items: flex-start;
+  margin-top: 0.9rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+/* The grade is the headline, so it gets display type — but the rank beside it
+   is the honest finding, which is why they sit at the same weight visually
+   rather than the letter dominating the block. */
+.report-letter {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 3.2rem;
+  line-height: 0.9;
+  color: var(--purple);
+  min-width: 2.6ch;
+  text-align: center;
+}
+
+.report-grade-body {
+  min-width: 0;
+}
+
+.report-rank {
+  font-size: 1.02rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.report-capped {
+  margin-top: 0.7rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.report-findings {
+  list-style: none;
+  margin: 1.1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.report-finding {
+  display: grid;
+  grid-template-columns: 5.6rem 1fr;
+  gap: 0.7rem;
+  align-items: baseline;
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.89rem;
+  line-height: 1.55;
+}
+
+.report-finding:last-child {
+  border-bottom: none;
+}
+
+.report-tag {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 0.15rem;
+}
+
+.report-good {
+  color: var(--purple);
+}
+
+.report-warn {
+  color: var(--warn);
+}
+
+/* An inline "ask about this" that reads as part of the sentence rather than as
+   a control bolted onto the end of it. */
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--purple);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-btn:hover {
+  color: var(--purple-hover);
+}
+
+.report-ask {
+  margin-top: 1.1rem;
+}
+
+@media (max-width: 620px) {
+  .report-grade {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .report-finding {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
+
+/* --- grounded news check ------------------------------------------------- */
+
+/* Visually separated from the findings above it on purpose: everything above
+   is derived from the draft board and exactly true, everything here was read
+   off the web a moment ago and is allowed to disagree with it. */
+
+.review {
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border);
+}
+
+.review-waiting {
+  color: var(--muted);
+}
+
+.review-summary {
+  margin-top: 0.7rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.review-list {
+  list-style: none;
+  margin: 0.8rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.review-row {
+  display: grid;
+  grid-template-columns: 4.6rem 1fr;
+  gap: 0.7rem;
+  align-items: baseline;
+  padding: 0.45rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+.review-row:nth-child(odd) {
+  background: var(--surface-sunken);
+}
+
+.review-verdict {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.review-rising .review-verdict {
+  color: var(--purple);
+}
+
+.review-watch .review-verdict {
+  color: var(--warn);
+}
+
+.review-concern .review-verdict {
+  color: var(--danger);
+}
+
+.review-rest {
+  margin-top: 0.9rem;
+}
+
+.review-rest summary {
+  cursor: pointer;
+}
+
+.review-unverified {
+  margin-top: 0.8rem;
+}
+
+@media (max-width: 620px) {
+  .review-row {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
+
+/* --- pick advice --------------------------------------------------------- */
+
+/* Sits above the available list, where the decision is actually being made.
+   Bordered in the accent because it is the one opinionated thing on the page —
+   everything else on this screen is a list. */
+
+/* Collapsed by default: one quiet line, not a coach shouting over the board.
+   It only takes on the accent border once you have chosen to open it. */
+.advice {
+  margin: 0.9rem 0 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.advice-open {
+  border-color: var(--purple);
+  background: var(--purple-softer);
+}
+
+.advice-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.85rem;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.advice-toggle:hover {
+  background: var(--surface-sunken);
+}
+
+.advice-open .advice-toggle:hover {
+  background: none;
+}
+
+.advice-eyebrow {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex: none;
+}
+
+.advice-line {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.advice-chev {
+  flex: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.advice-body {
+  padding: 0 1.15rem 1rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0.1rem;
+  padding-top: 0.85rem;
+}
+
+.advice-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.advice-pick {
+  margin-top: 0.5rem;
+}
+
+.advice-name {
+  font-size: 1.05rem;
+}
+
+.advice-why {
+  margin-top: 0.3rem;
+  font-size: 0.87rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.advice-take {
+  margin-top: 0.6rem;
+}
+
+.advice-sub {
+  margin-top: 1rem;
+}
+
+.advice-list {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.advice-alt {
+  display: grid;
+  grid-template-columns: 2.6rem auto 1fr;
+  gap: 0.55rem;
+  align-items: center;
+  font-size: 0.87rem;
+}
+
+.advice-alt-pos {
+  font-size: 0.64rem;
+}
+
+.advice-wait {
+  margin-top: 0.9rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.83rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* --- player faces + position colour --------------------------------------- */
+
+.face {
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+  background: var(--surface-alt);
+  /* Sleeper headshots are cut out on a light card. On a dark theme that reads
+     as a bright disc, so the plate stays neutral and the ring does the work. */
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+/* Team shields are artwork, not portraits — square them off and let them
+   breathe rather than cropping a circle out of the middle. */
+.face-logo {
+  border-radius: 0;
+  object-fit: contain;
+  background: none;
+  box-shadow: none;
+}
+
+.face-blank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: var(--surface-alt);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+/* The position tag. Colour is never the only signal — the letters are always
+   there — so this stays readable to anyone who can't separate the two greens. */
+.pos-tag {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pos-qb, .face-blank.pos-qb { color: var(--pos-qb); }
+.pos-rb, .face-blank.pos-rb { color: var(--pos-rb); }
+.pos-wr, .face-blank.pos-wr { color: var(--pos-wr); }
+.pos-te, .face-blank.pos-te { color: var(--pos-te); }
+.pos-k,  .face-blank.pos-k  { color: var(--pos-k); }
+.pos-def,.face-blank.pos-def{ color: var(--pos-def); }
+
+/* Speed control sits with the other draft controls rather than in settings —
+   it is something you adjust mid-draft when the pace stops suiting you. */
+.mock-speed {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+/* --- pre-draft plan ------------------------------------------------------- */
+
+/* Built to be read at a glance on a second screen while a real draft runs, so
+   density matters more than polish: every round has to be findable by its
+   number without scrolling hunting. */
+
+.plan-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  align-items: flex-start;
+  margin: 1.4rem 0 1rem;
+}
+
+.plan-caveat {
+  margin-bottom: 1.6rem;
+}
+
+.plan-list {
+  list-style: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.plan-round {
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.plan-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* The round number is the index you scan for, so it gets the weight. */
+.plan-round-no {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: var(--purple);
+  min-width: 2.2rem;
+}
+
+.plan-pick {
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.plan-needs {
+  margin-left: auto;
+}
+
+.plan-take {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.plan-take-who {
+  flex: 1;
+  min-width: 0;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.plan-take-empty {
+  padding: 0.2rem 0;
+}
+
+.plan-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  margin-top: 0.5rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--border);
+}
+
+.plan-label {
+  flex: none;
+  width: 5.2rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* "If he falls" is a wish, not a plan — it should read quieter than the rest. */
+.plan-label-hope {
+  color: var(--muted-dim);
+}
+
+.plan-alts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  min-width: 0;
+}
+
+.plan-alt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.84rem;
+}
+
+.plan-alt-name {
+  overflow-wrap: anywhere;
+}
+
+.plan-ask {
+  margin-top: 1.4rem;
+}
+
+@media (max-width: 620px) {
+  .plan-needs {
+    margin-left: 0;
+    width: 100%;
+  }
+  .plan-row {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .plan-label {
+    width: auto;
+  }
+}
